@@ -1,0 +1,32 @@
+CREATE TABLE Повернення_позик(
+код_клієнта INT PRIMARY KEY,
+дата_платежу DATETIME,
+розмір_платежу INT,
+позика_погашена BIT,
+CONSTRAINT FK_for_Повернення_позики FOREIGN KEY(код_клієнта) REFERENCES Клієнти(код_клієнта)
+on delete cascade
+)
+
+CREATE TABLE Види_позик (
+код_позики INT PRIMARY KEY,
+назначення_позики VARCHAR,
+процентна_ставка DECIMAL(3,2)
+ CONSTRAINT percent_constr CHECK(процентна_ставка between 0 and 1),
+кількість_виплат INT,
+)
+
+
+CREATE TABLE Клієнти (
+ПІП_клієнта VARCHAR,
+ІД_код INT,
+код_клієнта INT,
+дата_заключення_договору DATETIME,
+дата_закінчення_договору DATETIME,
+розмір_позики INT,
+код_позики INT,
+середній_розмір_позики INT,
+боржники VARCHAR,
+CONSTRAINT PM_for_Клієнти PRIMARY KEY(код_клієнта),
+CONSTRAINT U_код_позики unique (код_позики),
+CONSTRAINT FK_for_Клієнти FOREIGN KEY (код_позики) REFERENCES Види_позик(код_позики)
+);

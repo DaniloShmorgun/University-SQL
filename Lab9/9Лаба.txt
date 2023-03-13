@@ -1,0 +1,90 @@
+use [Облік виданих позик];
+go
+
+
+
+
+
+ 1.1 СТВОРИТИ НОВИЙ ОБЛІКОВИЙ ЗАПИС
+create login Петро with password='12345xyz'
+create user Петро for login Петро;
+select HAS_DBACCESS('Облік виданих позик');
+
+ 1.2 НАДАТИ КОРИСТУВАЧУ РОЛЬ БД
+create role MyRole
+execute sp_addrolemember "MyRole","Петро";
+
+ 1.3 НАДАТИ КОРИСТУВАЧУ "Bill" ПОВНОВАЕННЯ НА ДОСТУП ДО ЗБЕРЕЖЕНОЇ ПРОЦЕДУРИ
+
+create login Bill with password = '12345' 
+create user Bill for login Bill
+grant execute on [Облік виданих позик].dbo.Вчасні_клієнти to [Bill]
+
+ 1.4 ВІДКЛИКАТИ ВСІ НАДАНІ "John" привілегії
+
+create login John with password ='123'
+create user John for login John
+revoke all  to [John]
+
+
+2. Поясніть призначення наступних команд Transact SQL:
+
+ НАДАЄ КОРИСТУВАЧУ J_Smith МОЖЛИВІСТЬ ВИКОРИСТАНЬ КОМАНД SELECT TA INSERT
+ З МОЖЛИВІСТЮ НАДАВАТИ ТАКІ ПРИВІЛЕГІЇ ІНШИМ КОРИСТУВАЧАМ
+
+a) GRANT SELECT, INSERT
+ON SUPPLIES
+TO J_Smith
+WITH GRANT OPTION AS Economists
+
+
+
+ СТВОРЮЄ НОВИЙ ЛОГІН  ‘king_of_the_db', ‘a2h7d0f7dg84mdf94' - ПАРОЛЬ, ‘Ukrainian' - мова,
+ ‘master'- база даних, `NULL` - SID створити автоматично
+b) EXEC[UTE] sp_addlogin ‘king_of_the_db',
+‘a2h7d0f7dg84mdf94',
+‘PROJECTS',
+‘Ukrainian',
+‘master',
+‘NULL'
+
+ ПРИБРАТИ ВСІ ПРИВІЛЕГІЇ З ‘M_Ivanenko' ТА ЗІ ВСІХ ОБ'ЄКТІВ ЩО ЗАЛЕЖАТЬ ВІД НЬОГО
+c) REVOKE ALL TO ‘M_Ivanenko'
+CASCADE
+
+
+use master;
+go
+select *
+from sys.symmetric_keys
+where name = '##MS_ServiceMasterKey##';
+go
+
+ ТРЕТЄ ЗАВДАННЯ
+
+use [Облік виданих позик];
+create master key encryption by password = '12345';
+go
+
+create certificate Certificate3
+with subject = 'protect ІД_код';
+
+create symmetric key SymKey3
+with algorithm = AES_128
+encryption by certificate Certificate3
+
+alter table Клієнти 
+add ПІП_клієнта_код_Enctypted varbinary(MAX) NULL
+
+open symmetric key SymKey3
+decryption by certificate Certificate3;
+update Клієнти
+set ПІП_клієнта_код_Enctypted = ENCRYPTBYKEY(KEY_GUID('SymKey3'),ПІП_клієнта)
+from Клієнти
+
+open symmetric key SymKey2
+
+decryption by certificate Certificate2;
+
+select ПІП_клієнта_код_Enctypted [ІД КОД ЗАШИФРОВАНИЙ], convert(varchar,DecryptByKey(ПІП_клієнта_код_Enctypted)) [РОЗШИФРОВАНИЙ]
+from Клієнти

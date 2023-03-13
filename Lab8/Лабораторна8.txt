@@ -1,0 +1,35 @@
+create trigger del_Види_позики
+on Види_позик
+INSTEAD OF delete
+as 
+if exists(select 'TRUE'
+from deleted d
+left join Клієнти кл 
+on d.код_позики = кл.код_позики)
+begin
+
+RAISERROR('Є посилання на атрибут !',16,1)
+ROLLBACK tran
+
+end;
+
+
+create trigger add_update_Повернення_позик
+on Повернення_позик
+INSTEAD OF insert,update
+as 
+if exists(select 'TRUE'
+from inserted ins
+left join Види_позик l on 
+ins.код_позики = l.код_позики
+)
+begin
+
+RAISERROR('Є посилання на атрибут при оновленні, або додаванні',17,1)
+ROLLBACK tran
+
+end;
+
+delete from Види_позик where код_позики = 86606017
+
+insert into Повернення_позик values(320,'1990.02.02', 200,1,3310972

@@ -1,0 +1,57 @@
+-- ПЕРШЕ ЗАВДАННЯ
+
+--ALTER TABLE Клієнти 
+--ADD 
+--CONSTRAINT loan_size_constraint
+--CHECK (розмір_позики >= 1000),
+--CONSTRAINT avarage_loan_size_constraint
+--CHECK (середній_розмір_позики >= 1000)
+
+-- ДРУГЕ ЗВДАННЯ
+
+--ALTER TABLE Повернення_позик
+--WITH NOCHECK
+--ADD CONSTRAINT FK_for_Повернення_позики FOREIGN KEY (код_клієнта) REFERENCES Клієнти(код_клієнта)
+--ON DELETE CASCADE;
+
+--alter table Види_позик
+--add constraint FK_for_Види_позик foreign key (код_позики) REFERENCES Клієнти (код_позики);
+
+--ТРЕТЄ ЗАВДАННЯ
+
+--alter table Повернення_позик nocheck constraint  FK_for_Повернення_позик;
+--alter table Повернення_позик with check check constraint  FK_for_Повернення_позик;
+
+
+--insert into Повернення_позик(код_клієнта) values (123456789);
+--insert into Клієнти(код_клієнта, ІД_код, код_позики) values (12345, 42, 24);
+--insert into Повернення_позик(код_клієнта) values (2);
+
+--ЧЕТВЕРТЕ ЗАВДАННЯ
+
+-- ВИДАЛЯЮ "НЕ ІСНУЮЧІ КОДИ КЛІЄНТІВ", ЗНОВУ ПІДКЛЮЧАЮ ОБМЕЖЕННЯ
+
+--delete код_клієнта from Повернення_позик код_клієнта
+--left join Клієнти кл on кл.код_клієнта = пов_поз.код_клієнта
+--where кл.код_клієнта is null;
+
+--alter table Повернення_позик with check check constraint  FK_for_Повернення_позик;
+
+-- П'ЯТЕ ЗАВДАННЯ
+
+-- ДЛЯ ОМБЕЖЕННЯ "FOREIGN KEY", аналогічно пункту 4). Якщо в таблиці "Клієнти", доведеться прибрати
+-- loan_size_constraint, наприклад для певного клієнту, тоді вимкнемо обмеження, і після заходів введу команду
+-- ALTER TABLE Клієнти NOCHECK CONSTRAINT loan_size_constraint, це не завадить для подальшої роботи з таблицею.
+
+-- ШОСТЕ ЗАВДАННЯ 
+
+--alter table Клієнти 
+--add Single varchar(3)
+--default 'так';
+
+--alter table Клієнти
+--drop column Single;
+
+--CЬОМЕ ТА ВОСЬМЕ ЗАВДАННЯ
+
+--exec sp_rename 'Клієнти', 'Клієнти1';
